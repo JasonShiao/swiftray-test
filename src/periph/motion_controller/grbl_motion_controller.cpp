@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include <QDebug>
+#include <QtGlobal>
 
 GrblMotionController::GrblMotionController(QObject *parent)
   : MotionController{parent}
@@ -38,14 +39,20 @@ MotionController::CmdSendResult GrblMotionController::sendCmdPacket(QPointer<Exe
       if (result < 0) {
       #else
       int result = port_->write(cmd_packet.toStdString().c_str());
+      port_->flush();
       if (result < 0) {
       #endif
         port_tx_mutex_.unlock();
         qInfo() << "port_->write failed";
         return CmdSendResult::kFail;
       }
-      qInfo() << "SND>" << cmd_packet;
-      emit MotionController::cmdSent(cmd_packet);
+      #if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+      qInfo() << "SND: " << cmd_packet.first(result);
+      Q_EMIT MotionController::cmdSent(cmd_packet.first(result));
+      #else
+      qInfo() << "SND: " << cmd_packet.left(result);
+      Q_EMIT MotionController::cmdSent(cmd_packet.left(result));
+      #endif
     } catch(...) {
       port_tx_mutex_.unlock();
       return CmdSendResult::kFail;
@@ -70,15 +77,21 @@ MotionController::CmdSendResult GrblMotionController::sendCmdPacket(QPointer<Exe
   if (result < 0) {
   #else
   int result = port_->write(cmd_packet.toStdString().c_str());
+  port_->flush();
   if (result < 0) {
   #endif
     return CmdSendResult::kFail;
   }
-  qInfo() << "SND: " << cmd_packet;
   cbuf_occupied_ += cmd_packet.size();
   cmd_size_buf_.push_back(cmd_packet.size());
   enqueueCmdExecutor(executor);
-  emit MotionController::cmdSent(cmd_packet);
+  #if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+  qInfo() << "SND: " << cmd_packet.first(result);
+  Q_EMIT MotionController::cmdSent(cmd_packet.first(result));
+  #else
+  qInfo() << "SND: " << cmd_packet.left(result);
+  Q_EMIT MotionController::cmdSent(cmd_packet.left(result));
+  #endif
 
   return CmdSendResult::kOk;
 }
