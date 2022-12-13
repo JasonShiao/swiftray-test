@@ -30,6 +30,9 @@ if (MINGW)
   link_libraries(ws2_32)
   message(STATUS "Link ws2_32 for resolving __imp_WSAStartup and __imp_WSACleanup undefined issue")
 endif()
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+set_source_files_properties(updater_sparkle.mm PROPERTIES COMPILE_FLAGS -fobjc-arc)
+endif()
 
 get_filename_component(SRC_DIR "src" REALPATH)
 
@@ -96,6 +99,7 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   endif()
   set(APP_RESOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/images/icon.icns
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources/pem/dsa_pub.pem
   )
   if (DEFINED ENABLE_SENTRY)
   set(APP_ADDITIONAL_EXEC_FILES
@@ -154,6 +158,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif ()
 
 add_subdirectory(src/canvas)
+add_subdirectory(src/utils)
 add_subdirectory(src/common)
 add_subdirectory(src/windows)
 add_subdirectory(src/widgets)
@@ -366,7 +371,15 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     ${SPARKLE_LIBRARY}
   )
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-
+  find_library(SPARKLE_LIBRARY 
+    Sparkle 
+    PATHS ${CMAKE_SOURCE_DIR}/third_party/sparkle
+    REQUIRED
+  )
+  #message(${SPARKLE_LIBRARY})
+  target_link_libraries(${PROJECT_NAME} 
+    ${SPARKLE_LIBRARY}
+  )
 else()
   # TODO: Linux
 endif()

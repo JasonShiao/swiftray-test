@@ -41,6 +41,9 @@
 #ifdef Q_OS_WIN
 #include <winsparkle.h>
 #endif
+#ifdef Q_OS_MACOS
+#include "utils/updater.h"
+#endif
 
 #include "ui_mainwindow.h"
 
@@ -253,9 +256,9 @@ void MainWindow::loadStyles() {
   ui->actionStart_2->setIcon(QIcon((isDarkMode() ? ":/resources/images/dark/icon-start.png" : ":/resources/images/icon-start.png")));
 }
 
+#ifdef Q_OS_WIN
 void MainWindow::initWinSparkle()
 {
-#ifdef Q_OS_WIN
     // Setup updates feed. This must be done before win_sparkle_init(), but
     // could be also, often more conveniently, done using a VERSIONINFO Windows
     // resource. See the "psdk" example and its .rc file for an example of that
@@ -273,15 +276,13 @@ void MainWindow::initWinSparkle()
 
     // Initialize the updater and possibly show some UI
     win_sparkle_init();
-#endif
 }
 
 void MainWindow::checkForUpdates()
 {
-#ifdef Q_OS_WIN
     win_sparkle_check_update_with_ui();
-#endif
 }
+#endif
 
 /**
  * @brief Check whether there is any unsaved change, and ask user to save
@@ -1108,8 +1109,10 @@ void MainWindow::loadWidgets() {
 }
 
 void MainWindow::registerEvents() {
+#ifdef Q_OS_WIN
   connect(this, &MainWindow::windowWasShown, this, &MainWindow::initWinSparkle,
           Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
+#endif
 
   // Monitor canvas events
   connect(canvas_, &Canvas::modeChanged, this, &MainWindow::updateMode);
@@ -1173,7 +1176,12 @@ void MainWindow::registerEvents() {
     about_window_->activateWindow();
     about_window_->raise();
   });
+#ifdef Q_OS_WIN
   connect(ui->actionCheckForUpdates, &QAction::triggered, this, &MainWindow::checkForUpdates);
+#endif
+#ifdef Q_OS_MACOS
+  Updater *updater = new Updater(ui->actionCheckForUpdates);
+#endif
   connect(ui->actionMachineSettings, &QAction::triggered, [=]() {
     machine_manager_->show();
     machine_manager_->activateWindow();
