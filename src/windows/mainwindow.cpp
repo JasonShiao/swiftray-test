@@ -42,7 +42,7 @@
 #include <winsparkle.h>
 #endif
 #ifdef Q_OS_MACOS
-#include "utils/updater.h"
+#include <utils/updater.h>
 #endif
 
 #include "ui_mainwindow.h"
