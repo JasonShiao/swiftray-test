@@ -7,7 +7,12 @@ set(VERSION_MINOR 1)
 set(VERSION_BUILD 1)
 set(VERSION_BETA  0) #x (e.g. 0,1,2,...)
 set(VERSION_SUFFIX "") # e.g. empty("") or "-beta.x"
-set(VER_PRODUCTVERSION_STR "1.1.1") # e.g. 1.x.x or 1.x.x-beta.x
+#set(VER_PRODUCTVERSION_STR "1.1.1") # e.g. 1.x.x or 1.x.x-beta.x
+set(VER_PRODUCTVERSION_STR "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_BUILD}${VERSION_SUFFIX}")
+# Used in .rc files and manifests
+set(RC_VERSION ${VERSION_MAJOR},${VERSION_MINOR},${VERSION_BUILD},${VERSION_BETA})
+
+message(STATUS "Swiftray Ver: ${VER_PRODUCTVERSION_STR}, MaV: ${VERSION_MAJOR}, MiV: ${VERSION_MINOR}, BuildV: ${VERSION_BUILD}, EV: ${VERSION_SUFFIX}")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_AUTOMOC ON)
@@ -29,9 +34,6 @@ endif()
 if (MINGW)
   link_libraries(ws2_32)
   message(STATUS "Link ws2_32 for resolving __imp_WSAStartup and __imp_WSACleanup undefined issue")
-endif()
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-set_source_files_properties(updater_sparkle.mm PROPERTIES COMPILE_FLAGS -fobjc-arc)
 endif()
 
 get_filename_component(SRC_DIR "src" REALPATH)
@@ -139,6 +141,10 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC VERSION_BUILD=${VERSION_BUILD}
 target_compile_definitions(${PROJECT_NAME} PUBLIC VERSION_BETA=${VERSION_BETA})
 target_compile_definitions(${PROJECT_NAME} PUBLIC VERSION_SUFFIX=\"${VERSION_SUFFIX}\")
 target_compile_definitions(${PROJECT_NAME} PUBLIC VER_PRODUCTVERSION_STR=\"${VER_PRODUCTVERSION_STR}\\0\")
+
+if (ENABLE_SPARKLE)
+target_compile_definitions(${PROJECT_NAME} PUBLIC HAVE_SOFTWARE_UPDATE=1)
+endif ()
 
 # ====================== Subdirectory sources =======================
 target_sources(Swiftray PRIVATE
@@ -358,6 +364,8 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 # Sparkle
+if (ENABLE_SPARKLE)
+
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   find_path(SPARKLE_INCLUDE_DIR 
     NAMES winsparkle.h
@@ -371,18 +379,22 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     ${SPARKLE_LIBRARY}
   )
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  find_library(SPARKLE_LIBRARY 
-    Sparkle 
-    PATHS ${CMAKE_SOURCE_DIR}/third_party/sparkle
-    REQUIRED
-  )
-  #message(${SPARKLE_LIBRARY})
-  target_link_libraries(${PROJECT_NAME} 
-    ${SPARKLE_LIBRARY}
-  )
+  find_package(Sparkle)
+  if (SPARKLE_FOUND)
+    target_include_directories(${PROJECT_NAME} PRIVATE
+      ${SPARKLE_INCLUDE_DIRS}
+    )
+    target_link_libraries(${PROJECT_NAME} 
+      ${SPARKLE_LIBRARIES}
+    )
+  else ()
+    message("Unable to find Sparkle")
+  endif ()
 else()
   # TODO: Linux
 endif()
+
+endif() # ENABLE_SPARKLE
 
 
 # ====================== tests =======================

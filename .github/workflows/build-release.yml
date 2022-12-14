@@ -37,6 +37,7 @@ jobs:
           brew install glib
           brew install cairo
           brew install poppler
+          brew install sparkle
       # Install Qt 5.15.2
       # NOTE: jurplel/install-qt-action@v2.14.0 hasn't supported Qt6.2.4
       - name: Install Qt 5.15.2
@@ -192,7 +193,7 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $MACOS_KEYCHAIN_PASSWORD build.keychain
           cd build
           /usr/bin/codesign --force --deep --verify --verbose --timestamp --options runtime --sign "Developer ID Application: FLUX TECHNOLOGY CORP. (4Y92JWKV94)" "Swiftray.app/Contents/MacOS/crashpad_handler"
-          /usr/bin/codesign --force --deep --verify --verbose --timestamp --options runtime --sign "Developer ID Application: FLUX TECHNOLOGY CORP. (4Y92JWKV94)" "Swiftray.app"
+          /usr/bin/codesign --force --deep --verify --verbose --timestamp --options runtime --sign "Developer ID Application: FLUX TECHNOLOGY CORP. (4Y92JWKV94)" --entitlements ${{ github.workspace }}/packaging/macOS/Swiftray.app.xcent --generate-entitlement-der "Swiftray.app"
 
       - name: Notarize Release Build
         if: ${{ matrix.cfg.dist }}

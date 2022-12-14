@@ -3,14 +3,16 @@ IDI_ICON1 ICON DISCARDABLE "resources/images/icon.ico"
 #include <winver.h>
 
 // Get updates from this appcast feed:
-FeedURL     APPCAST     {"https://swiftray.s3.ap-northeast-1.amazonaws.com/appcast.xml"}
+// Could be set with win_sparkle_set_appcast_url() API, not necessary to set here
+//FeedURL     APPCAST     {"https://swiftray.s3.ap-northeast-1.amazonaws.com/win/swiftray_sparkle_update_cast_windows.xml"}
 
 // And verify signature using DSA public key:
-DSAPub      DSAPEM      "resources/pem/dsa_pub.pem"
+// Could be set with win_sparkle_set_dsa_pub_pem() API, not necessary to set here
+//DSAPub      DSAPEM      "resources/pem/dsa_pub.pem"
 
 1 VERSIONINFO
-    FILEVERSION    VERSION_MAJOR,VERSION_MINOR,VERSION_BUILD,0
-    PRODUCTVERSION VERSION_MAJOR,VERSION_MINOR,VERSION_BUILD,VERSION_BETA
+    FILEVERSION     @RC_VERSION@
+    PRODUCTVERSION  @RC_VERSION@
     FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
     FILEFLAGS       0
     FILETYPE        VFT_APP
@@ -22,10 +24,12 @@ DSAPub      DSAPEM      "resources/pem/dsa_pub.pem"
         {
             VALUE "CompanyName",        "FLUX Inc.\0"
             VALUE "FileDescription",    "Swiftray\0"
-            VALUE "FileVersion",        "1.0.0.0\0"
+            VALUE "FileVersion",        "@VER_PRODUCTVERSION_STR@\0"
+            VALUE "InternalName",       "Swiftray @VER_PRODUCTVERSION_STR@\0"
+            VALUE "LegalCopyright",     "Copyright (c) 2022 FLUX Inc.\0"
             VALUE "OriginalFilename",   "Swiftray.exe\0"
             VALUE "ProductName",        "Swiftray\0"
-            VALUE "ProductVersion",     VER_PRODUCTVERSION_STR
+            VALUE "ProductVersion",     "@VER_PRODUCTVERSION_STR@\0"
         }
     }
     BLOCK "VarFileInfo"

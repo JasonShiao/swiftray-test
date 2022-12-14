@@ -1,5 +1,8 @@
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 target_sources(Swiftray PRIVATE
-  updater_sparkle.mm
+  software_update.c
+)
+if (ENABLE_SPARKLE)
+target_sources(Swiftray PRIVATE
+  sparkle_bridge.m
 )
 endif ()

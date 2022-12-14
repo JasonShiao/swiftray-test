@@ -97,10 +97,8 @@ public Q_SLOTS:
   void setCustomOrigin(std::tuple<qreal, qreal, qreal> custom_origin);
   void testRotary(QRectF bbox, char rotary_axis, qreal feedrate, double framing_power);
 
-#ifdef Q_OS_WIN
-  void initWinSparkle();
+  void initSparkle();
   void checkForUpdates();
-#endif
 
 private Q_SLOTS:
 
