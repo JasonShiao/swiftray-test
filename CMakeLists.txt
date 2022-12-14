@@ -97,6 +97,7 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   if (DEFINED ENABLE_SENTRY)
   set(APP_FRAMEWORK_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/sentry-native/install/lib/libsentry.dylib
+    ${SPARKLE_LIBRARIES}
     )
   endif()
   set(APP_RESOURCE_FILES
@@ -129,6 +130,11 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${VERSION_MAJOR}.${VERSION_MINOR}
     MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_BUILD}
     MACOSX_BUNDLE_COPYRIGHT "Copyright (c) 2022, FLUX Inc."
+  )
+  add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD 
+    COMMAND install_name_tool -add_rpath "@executable_path/../Frameworks"
+            $<TARGET_FILE:${PROJECT_NAME}>
   )
 else()
     # Linux and others
@@ -228,8 +234,8 @@ find_package(OpenCV REQUIRED)
 include_directories(
   ${OpenCV_INCLUDE_DIRS}
 )
-target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
+#target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES})
+#target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
 target_link_libraries(${PROJECT_NAME} opencv_core)
 target_link_libraries(${PROJECT_NAME} opencv_imgproc)
 
@@ -387,6 +393,13 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     target_link_libraries(${PROJECT_NAME} 
       ${SPARKLE_LIBRARIES}
     )
+    message("SPARKLE_LIB: " ${SPARKLE_LIBRARY})
+    add_custom_command(
+        TARGET ${PROJECT_NAME}  POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${SPARKLE_LIBRARY}
+                ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app/Contents/Frameworks/Sparkle.framework
+    )
   else ()
     message("Unable to find Sparkle")
   endif ()
@@ -416,4 +429,5 @@ endif() # ENABLE_SPARKLE
 
 # ====================== bundle =======================
 # TODO: BundleUtilities and CPack
+
 

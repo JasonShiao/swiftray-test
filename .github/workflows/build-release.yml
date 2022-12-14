@@ -9,7 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         cfg:
-          - { os: macos-10.15, xcode_version: '11.3',   build: 'qmake', dist: false }
+          #- { os: macos-10.15, xcode_version: '11.3',   build: 'qmake', dist: false }
           - { os: macos-12,    xcode_version: '13.2.1', build: 'cmake', dist: true}
 
     name: ${{matrix.cfg.os}} ${{matrix.cfg.build}}
@@ -110,7 +110,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_SPARKLE=1 -DENABLE_SENTRY=${{secrets.SENTRY_DSN}} -DCMAKE_PREFIX_PATH=$RUNNER_WORKSPACE/Qt/5.15.2/clang_64/lib/cmake ${{ github.workspace }}
+          cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_SKIP_RPATH=TRUE -DENABLE_SPARKLE=1 -DENABLE_SENTRY=${{secrets.SENTRY_DSN}} -DCMAKE_PREFIX_PATH=$RUNNER_WORKSPACE/Qt/5.15.2/clang_64/lib/cmake ${{ github.workspace }}
 
       - name: Compile (Build) project
         if: ${{matrix.cfg.build == 'qmake' }}
