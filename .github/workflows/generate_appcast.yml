@@ -96,4 +96,11 @@ jobs:
               --signature exe_sign_result \
               --release_ver "${{ inputs.version }}" \
               --src_appcast swiftray_update_appcast_Windows.xml
+      
+      - uses: actions/upload-artifact@v3
+        with:
+          name: my-artifact
+          path: |
+            swiftray_update_appcast_Windows.xml
+            swiftray_update_appcast_macOS.xml
 

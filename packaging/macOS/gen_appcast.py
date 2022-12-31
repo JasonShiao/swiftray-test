@@ -78,6 +78,8 @@ def main():
                       options.release_ver,
                       options.src_appcast)
     # TODO: Write to file
+    with open(options.src_appcast, "w") as f:
+        f.write(xml_str)
     print(xml_str)
 
 if __name__ == "__main__":
