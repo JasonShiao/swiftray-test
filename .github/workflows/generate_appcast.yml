@@ -60,13 +60,13 @@ jobs:
       - name: Generate Signature
         if: contains( matrix.cfg.os, 'macos' )
         run: |
-          /usr/local/Caskroom/sparkle/*/bin/sign_update -f sparkle_key.pem swiftray_${{ inputs.version }}.dmg > dmg_sign_result
+          packaging/macOS/sign_update -f sparkle_key.pem swiftray_${{ inputs.version }}.dmg > dmg_sign_result
           cat dmg_sign_result
           openssl dgst -sha1 -binary < swiftray_${{ inputs.version }}.exe | openssl dgst -sha1 -sign dsa_priv.pem | openssl enc -base64 > exe_sign_result
           cat exe_sign_result
 
       # TODO: Sign with ed25519 on Windows
-      - name: Try signing
+      - name: Generate Signature (Windows)
         if: contains( matrix.cfg.os, 'windows' )
         shell: cmd
         run: |
