@@ -1,4 +1,4 @@
-name: release-build
+name: Generate update appcast for release
 on:
   workflow_dispatch:
     inputs:
@@ -14,8 +14,8 @@ jobs:
       fail-fast: false
       matrix:
         cfg:
-          - { os: windows-latest, default_shell: 'msys2 {0}' }
-          #- { os: macos-12      , default_shell: bash        }
+          #- { os: windows-latest, default_shell: 'msys2 {0}' }
+          - { os: macos-12      , default_shell: bash        }
     defaults:
       run:
         shell: ${{ matrix.cfg.default_shell }}
