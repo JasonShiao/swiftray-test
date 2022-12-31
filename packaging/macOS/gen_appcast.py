@@ -20,13 +20,14 @@ def generate_appcast(is_ed25519, signature_file, release_ver, src_appcast_file):
 
     # Get publish date
     now = datetime.now()
-    pub_date = now.strftime("%a, %d %m %Y %H:%M:%S")
+    pub_date = now.strftime("%a, %d %b %Y %H:%M:%S")
+    pub_date += " +0000"
 
     # Parse source appcast.xml
-    tree = etree.parse(src_appcast)
+    tree = etree.parse(src_appcast_file)
     rss_root = tree.getroot()
     sparkle_namespace = rss_root.nsmap['sparkle']
-    xsparkle = f"{sparkle_namespace}"
+    xsparkle = f"{{{sparkle_namespace}}}"
     channel = next(rss_root.iter("channel"))
     # Create new update item
     xitem = etree.SubElement(channel, "item")

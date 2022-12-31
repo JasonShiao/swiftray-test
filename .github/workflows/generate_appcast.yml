@@ -34,7 +34,12 @@ jobs:
           install: >-
             unzip
             openssl
-
+      
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      
       - name: Download installer file
         run: |
           curl https://swiftray.s3.ap-northeast-1.amazonaws.com/win/swiftray_${{ inputs.version }}.exe -o swiftray_${{ inputs.version }}.exe
