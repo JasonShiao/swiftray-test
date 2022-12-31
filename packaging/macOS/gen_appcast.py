@@ -20,8 +20,7 @@ def generate_appcast(is_ed25519, signature_file, release_ver, src_appcast_file):
 
     # Get publish date
     now = datetime.now()
-    pub_date = now.strftime("%a, %d %b %Y %H:%M:%S")
-    pub_date += " +0000"
+    pub_date = now.strftime("%a, %d %b %Y %H:%M:%S +0000")
 
     # Parse source appcast.xml
     tree = etree.parse(src_appcast_file)
