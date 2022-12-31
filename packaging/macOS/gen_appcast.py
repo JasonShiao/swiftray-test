@@ -23,7 +23,7 @@ def generate_appcast(is_ed25519, signature_file, release_ver, src_appcast_file):
     pub_date = now.strftime("%a, %d %m %Y %H:%M:%S")
 
     # Parse source appcast.xml
-    tree = etree.parse(src_appcast)
+    tree = etree.parse(src_appcast_file)
     rss_root = tree.getroot()
     sparkle_namespace = rss_root.nsmap['sparkle']
     xsparkle = f"{sparkle_namespace}"
