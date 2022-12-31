@@ -26,7 +26,7 @@ def generate_appcast(is_ed25519, signature_file, release_ver, src_appcast_file):
     tree = etree.parse(src_appcast_file)
     rss_root = tree.getroot()
     sparkle_namespace = rss_root.nsmap['sparkle']
-    xsparkle = f"{sparkle_namespace}"
+    xsparkle = f"{{{sparkle_namespace}}}"
     channel = next(rss_root.iter("channel"))
     # Create new update item
     xitem = etree.SubElement(channel, "item")
